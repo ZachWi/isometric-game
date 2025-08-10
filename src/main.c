@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
 #include <string.h>
@@ -32,12 +33,14 @@ const int origin_x = (width / 2) - 48;
 const int origin_y = 120;
 
 
+
 void isometric(int gx, int gy, int *sx, int *sy){
     *sx = origin_x + (gx - gy) * (tile_w / 2);
     *sy = origin_y + (gx + gy) * (tile_h / 2);
 }
 
 int main(int argc, char **argv) {
+    uint32_t lastTime = SDL_GetTicks();
     srand(time(NULL)); 
     IMG_Init(IMG_INIT_PNG);
     CHECK_ERROR(SDL_Init(SDL_INIT_VIDEO) != 0, SDL_GetError());
@@ -57,17 +60,31 @@ int main(int argc, char **argv) {
     SDL_Texture* purpletext = SDL_CreateTextureFromSurface(renderer, purplesurf);
     SDL_Surface* greysurf = IMG_Load("assets/greycube.png");
     SDL_Texture* greytext = SDL_CreateTextureFromSurface(renderer, greysurf);
+    SDL_Surface* backsurf = IMG_Load("assets/background.png");
+    SDL_Texture* backtext = SDL_CreateTextureFromSurface(renderer, backsurf);
     SDL_FreeSurface(greensurf);
     SDL_FreeSurface(purplesurf);
     SDL_FreeSurface(greysurf);
+    SDL_FreeSurface(backsurf);
 
     int gx = 0;
     int gy = 0;
     int cx, cy;
     int dist = 0;
+    int distFlag;
+    int scan = 0;
     bool running = true;
     SDL_Event event;
     while(running) {
+        uint32_t currentTime = SDL_GetTicks();
+
+        float deltaTime = (float)(currentTime - lastTime) / 1000.0f;
+        lastTime = currentTime;
+        scan += 100.0f * deltaTime;
+        if (scan >= 96){
+            scan = 0;
+        }
+
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
                 running = false;
@@ -88,8 +105,8 @@ int main(int argc, char **argv) {
                 if(strcmp(key, "W") == 0 && gx > 0) {
                     gx -= 1;
                 }
-                if(strcmp(key, "X") == 0 && dist != 6){
-                    dist = 6;
+                if(strcmp(key, "X") == 0){
+                    distFlag = 1;
                 }
             }
         }
@@ -97,11 +114,20 @@ int main(int argc, char **argv) {
         // Clear screen
         SDL_RenderClear(renderer); 
         // draw
+        for (int by = 0; by < 20; by++) {
+            for (int bx = 0; bx <= 26; bx++) {
+                SDL_Rect backRect = { (bx * 96) + scan - 96, (by * 96) + scan - 96, tile_w, 96 };
+                SDL_RenderCopy(renderer, backtext, &srcRect, &backRect);
+            }
+        }
         for (int gy = 0; gy < 6; gy++) {
             for (int gx = 0; gx < 6; gx++) {
                 int sx, sy;
                 isometric(gx, gy, &sx, &sy);
                 SDL_Rect destRect = { sx, sy + dist, tile_w, 96 };
+                if(distFlag == 1){
+                    dist += 100.0f * deltaTime;
+                }
                 SDL_Texture* tex = ((gx + gy) % 2 == 0) ? greentext : purpletext;
                 SDL_RenderCopy(renderer, tex, &srcRect, &destRect);
             }
