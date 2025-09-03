@@ -83,10 +83,6 @@ int main(int argc, char **argv) {
 		if (scan >= 96){
 			scan = 0;
 		}
-		if (scan <= 96){
-			scan = 96;
-		}
-
 		while(SDL_PollEvent(&event)) {
 			if(event.type == SDL_QUIT) {
 				running = false;
