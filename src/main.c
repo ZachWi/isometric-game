@@ -70,9 +70,8 @@ int main(int argc, char **argv) {
     int gx = 0;
     int gy = 0;
     int cx, cy;
-    int dist = 0;
-    int distFlag;
     int scan = 0;
+    int dist = 0;
     bool running = true;
     SDL_Event event;
     while(running) {
@@ -105,9 +104,6 @@ int main(int argc, char **argv) {
                 if(strcmp(key, "W") == 0 && gx > 0) {
                     gx -= 1;
                 }
-                if(strcmp(key, "X") == 0){
-                    distFlag = 1;
-                }
             }
         }
 
@@ -125,9 +121,6 @@ int main(int argc, char **argv) {
                 int sx, sy;
                 isometric(gx, gy, &sx, &sy);
                 SDL_Rect destRect = { sx, sy + dist, tile_w, 96 };
-                if(distFlag == 1){
-                    dist += 100.0f * deltaTime;
-                }
                 SDL_Texture* tex = ((gx + gy) % 2 == 0) ? greentext : purpletext;
                 SDL_RenderCopy(renderer, tex, &srcRect, &destRect);
             }
