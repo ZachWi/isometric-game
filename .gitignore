@@ -1,3 +1,3 @@
-src/*.out
+build/*.out
 src/test.c
 src/main.out

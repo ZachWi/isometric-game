@@ -1,0 +1,4 @@
+/Users/zacharywillis/C/iso/build/CMakeFiles/my_sdl_app.dir
+/Users/zacharywillis/C/iso/build/CMakeFiles/run.dir
+/Users/zacharywillis/C/iso/build/CMakeFiles/edit_cache.dir
+/Users/zacharywillis/C/iso/build/CMakeFiles/rebuild_cache.dir
